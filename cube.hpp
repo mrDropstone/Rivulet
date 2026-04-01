@@ -127,13 +127,12 @@ public:
         }
     }
     bool render() {
-        zincul.key.update();
         Key pressed = zincul.key.get();
-        if(pressed == keys.up_arrow) {update_screen();dx = (dx + 5) % 360;zincul.render(); }
-        if(pressed == keys.down_arrow) {update_screen();dx = dx - 5; if(dx < 0) dx = 360;zincul.render();}
-        if(pressed == keys.right_arrow) {update_screen();dy = dy - 5; if(dy < 0) dy = 360;zincul.render();}
-        if(pressed == keys.left_arrow) {update_screen(); dy = (dy + 5) % 360;zincul.render();}
-        if(pressed == keys.esc) return false;
+        if (pressed == keys.up_arrow) {update_screen();dx = (dx + 5) % 360;zincul.render(); }
+        if (pressed == keys.down_arrow) {update_screen();dx = dx - 5; if(dx < 0) dx = 360;zincul.render();}
+        if (pressed == keys.right_arrow) {update_screen();dy = dy - 5; if(dy < 0) dy = 360;zincul.render();}
+        if (pressed == keys.left_arrow) {update_screen(); dy = (dy + 5) % 360;zincul.render();}
+        if (pressed == keys.esc) return false;
         return true;
     }
     Cube() {

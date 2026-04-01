@@ -1,30 +1,25 @@
-#include"style.hpp"
 #pragma once
-
-inline int utf_len(unsigned char character) {
-    if ((character & 0b10000000) == 0)       return 1;
-    if ((character & 0b11100000) == 0b11000000) return 2;
-    if ((character & 0b11110000) == 0b11100000) return 3;
-    if ((character & 0b11111000) == 0b11110000) return 4;
-    throw std::runtime_error("Invalid.");
-}
-
+#include "appearance.hpp"
+#include <stdint.h>
+#include <vector>
+#include <array>
+#include"utils.hpp"
 
 class u8_char { // utf-8 character
 private:
     char _data;
 
 public:
-    Style style;
+    Appearance appearance;
     u8_char() {}
     u8_char(unsigned char c) : _data(c) {}
-    int set(const char* chars, Style _style) {
-        style = _style;
+    int set(const char* chars, Appearance _appearance) {
+        appearance = _appearance;
         _data = chars[0];
         return 1;
     }
     void render() {
-        apply_style(style);
+        apply_appearance(appearance);
         std::cout << _data;
     }
     u8_char& operator=(unsigned char c) {
@@ -32,7 +27,7 @@ public:
         return *this;
     }
     bool operator==(u8_char& other) {
-        return style == other.style && _data == other._data; 
+        return appearance == other.appearance && _data == other._data; 
     }
     bool operator!=(u8_char& other) {
         return !operator==(other);
@@ -46,15 +41,15 @@ private:
     std::array<unsigned char, 4> _data;
 
 public:
-    Style style;
+    Appearance appearance;
     u32_char() {}
     u32_char(unsigned char c) {
         _data[0] = c;
         _data[1] = 0;
     }
-    int set(const char* chars, Style _style) {
+    int set(const char* chars, Appearance appearance) {
         int utf_result = utf_len(chars[0]);
-        style = _style;
+        this->appearance = appearance;
         int i = 0;
         while(i < utf_result) {
             _data[i] = chars[i];
@@ -64,7 +59,7 @@ public:
         return utf_result;
     }
     void render() {
-        apply_style(style);
+        apply_appearance(appearance);
         for(char c: _data) {
             if(c == 0) break;
             std::cout << c;
@@ -75,7 +70,7 @@ public:
            return *this;
     }
     bool operator==(u32_char& other) {
-        return style == other.style && (int32_t)(_data[0]) == (int32_t)(other._data[0]); 
+        return appearance == other.appearance && (int32_t)(_data[0]) == (int32_t)(other._data[0]); 
     }
     bool operator!=(u32_char& other) {
         return !operator==(other);
@@ -90,7 +85,8 @@ private:
     std::vector<CharacterType> _line_data;
 
 public:
-    int overwrite(const char* chars, unsigned int col, Style& style) { // It returns how much the col changed
+    int overwrite(const char* chars, unsigned int col, Appearance& appearance) { // It returns how much the col changed
+        int values_changed = 0;
         if(col > 3500) return 0;
         if(_line_data.size() < col) {
             int times = col - _line_data.size() + 1;
@@ -102,15 +98,17 @@ public:
         int i = 0;
         while(col < _line_data.size()) {
             if(chars[i] == '\0') return 0;
-            i += _line_data.at(col).set(&chars[i], style);
+            i += _line_data.at(col).set(&chars[i], appearance);
             col++;
+            values_changed++;
         }
         while(chars[i] != '\0') {
             _line_data.emplace_back('\0');
-            i += _line_data.at(col).set(&chars[i], style);
+            i += _line_data.at(col).set(&chars[i], appearance);
             col++;
+            values_changed++;
         }
-        return 0;
+        return values_changed;
     }
     void render(unsigned int rows_limit) {
         for(int i = 0; i < _line_data.size() && i < rows_limit; i++) {
@@ -163,9 +161,15 @@ private:
 
 public:
     Line() {}
-
-    void _overwrite(const char* chars, unsigned int col, Style& style) {
-        _data.overwrite(chars, col, style);
+    void _overwrite(char c, unsigned int& col, Appearance& appearance) {
+        std::string str;
+        str = c;
+        _data.overwrite(str.c_str(), col, appearance);
+        _is_modified = true;
+        col++;
+    }
+    void _overwrite(const char* chars, unsigned int& col, Appearance& appearance) {
+        col += _data.overwrite(chars, col, appearance);
         _is_modified = true;
     }
 

@@ -1,51 +1,7 @@
 #pragma once
 #include"line.hpp"
-struct ScreenSize {
-    unsigned int rows;
-    unsigned int cols;
-    unsigned int pixels_x;
-    unsigned int pixels_y;
-    ScreenSize(unsigned int rows, unsigned int cols, unsigned int pixels_x, unsigned int pixels_y) : 
-        rows(rows), cols(cols), pixels_x(pixels_x), pixels_y(pixels_y) {}
-    bool operator==(const ScreenSize& other) {
-        return other.rows == rows && other.cols == cols && other.pixels_x == pixels_x && other.pixels_y == pixels_y;
-    }
-    bool operator!=(const ScreenSize& other) {
-        return !operator==(other);
-    }
-};
-
-class ScreenSizeGetter {
-private:
-    struct winsize current_ws;
-    void update() {
-            ioctl(STDOUT_FILENO, TIOCGWINSZ, &current_ws);
-    }
-
-public:
-    unsigned int cols() {
-        update();
-        return current_ws.ws_col;
-    }   
-    unsigned int rows() {
-        update();
-        return current_ws.ws_row;
-    }
-    ScreenSize get_screen() {
-        update();
-        return ScreenSize(current_ws.ws_row, current_ws.ws_col, current_ws.ws_xpixel, current_ws.ws_ypixel);
-    }
-    winsize get_winsize() {
-        update();
-        return current_ws;
-    }
-    ScreenSize operator()() {
-        update();
-        return ScreenSize(current_ws.ws_row, current_ws.ws_col, current_ws.ws_xpixel, current_ws.ws_ypixel);
-    }
-    template<typename LineContainer>
-    friend class Display;
-};
+#include"appearance.hpp"
+#include"screen_size.hpp"
 
 template<typename LineContainer=Line<line<u32_char>>>
 class Display {
@@ -56,7 +12,7 @@ private:
 
 public:
     std::vector<LineContainer> display;
-    Style style;
+    Appearance appearance;
     unsigned int row = 0;
     unsigned int col = 0;
     ScreenSizeGetter size;
@@ -75,18 +31,15 @@ private:
     void prevent_overflow() { prevent_overflow(row); }
 
 public:
-    Display()  {
-    }
+    Display() {}
     void overwrite(char c) {
         prevent_overflow();
-        display.at(row)._overwrite(c, col, style);
+        display.at(row)._overwrite(c, col, appearance);
     }
     void clear() {
         for(LineContainer& line : display) {
             line.clear();
-            //display[i].mark_unmodified();
         }
-        //is_cleared = true;
     }
     LineContainer& line(unsigned int _row) {
         prevent_overflow(_row);
@@ -97,12 +50,12 @@ public:
     }
     void overwrite(const char* chars) {
         prevent_overflow();
-        display.at(row)._overwrite(chars, col, style);
+        display.at(row)._overwrite(chars, col, appearance);
     }
     void set(const char* chars) {
         prevent_overflow();
         unsigned int no;
-        display.at(row)._overwrite(chars, no, style);
+        display.at(row)._overwrite(chars, no, appearance);
     }
     Display& nth(unsigned int _row, unsigned int _col) {
         row = _row;
@@ -110,70 +63,70 @@ public:
         return *this;
     }
     Display& bg(uint8_t red, uint8_t green, uint8_t blue) {
-        style.bg.red = red; style.bg.green = green; style.bg.blue = blue;
-        style.bg.is_default_color = false;
+        appearance.bg.red = red; appearance.bg.green = green; appearance.bg.blue = blue;
+        appearance.bg.is_default_color = false;
         return *this;
     }
     Display& fg(uint8_t red, uint8_t green, uint8_t blue) {
-        style.fg.red = red; style.fg.green = green; style.fg.blue = blue;
-        style.fg.is_default_color = false;
+        appearance.fg.red = red; appearance.fg.green = green; appearance.fg.blue = blue;
+        appearance.fg.is_default_color = false;
         return *this;
     }
     Display& bg(uint8_t default_color) {
-        style.bg.red = default_color;
-        style.bg.is_default_color = true;
+        appearance.bg.red = default_color;
+        appearance.bg.is_default_color = true;
         return *this;
     }
     Display& fg(uint8_t default_color) {
-        style.fg.red = default_color;
-        style.fg.is_default_color = true;
+        appearance.fg.red = default_color;
+        appearance.fg.is_default_color = true;
         return *this;
     }
 
 
     Display& bold(bool state = true) {
-        style.bold = state;
-        if(!state) style.dim = false;
+        appearance.style.bold = state;
+        if(!state) appearance.style.dim = false;
         return *this;
     }
     Display& dim(bool state = true) {
-        style.dim = state;
-        if(!state) style.bold = false;
+        appearance.style.dim = state;
+        if(!state) appearance.style.bold = false;
         return *this;
     }
     Display& italic(bool state = true) {
-        style.italic = state;
+        appearance.style.italic = state;
         return *this;
     }
     Display& underline(bool state) {
-        style.underline = state;
+        appearance.style.underline = state;
         return *this;
     }
     Display& blink(bool state = true) {
-        style.blink = state;
+        appearance.style.blink = state;
         return *this;
     }
     Display& reverse(bool state = true) {
-        style.reverse = state;
+        appearance.style.reverse = state;
         return *this;
     }
     Display& invisible(bool state = true) {
-        style.invisible = state;
+        appearance.style.invisible = state;
         return *this;
     }
     Display& strike(bool state = true) {
-        style.strike = state;
+        appearance.style.strike = state;
         return *this;
     }
-    Display& default_style() {
-        style.bold = false;
-        style.dim = false;
-        style.bold = false;
-        style.italic = false;
-        style.blink = false;
-        style.reverse = false;
-        style.invisible = false;
-        style.strike = false;
+    Display& default_appearance() {
+        appearance.style.bold = false;
+        appearance.style.dim = false;
+        appearance.style.bold = false;
+        appearance.style.italic = false;
+        appearance.style.blink = false;
+        appearance.style.reverse = false;
+        appearance.style.invisible = false;
+        appearance.style.strike = false;
         return *this;
     }
     void render_on_empty_screen() {
