@@ -6,7 +6,10 @@ int main() {
     grid.render();
     grid.display
         .nth(5, 3)
-        .overwrite("hell55345343434343");
+        .overwrite("hel");
+    grid.display
+        .nth(7, 9)
+        .overwrite("hel");
     grid.render();
     while (1) {}
     return 0;

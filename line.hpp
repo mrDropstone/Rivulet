@@ -224,7 +224,7 @@ public:
                         }
                     } else {
                         if(rendered) {
-                            std::cout << "\033[" << row << ";" << i - last_render_col << "H";
+                            std::cout << "\033[" << row << ";" << last_render_col << "H";
                             rendered = false;
                         } 
                         render_from(last_render_col, i);
