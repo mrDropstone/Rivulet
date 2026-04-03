@@ -7,6 +7,7 @@ int main() {
     for (int i = 0; i < 300; i++) {
         Key key = rivulet.key.get();
         key.debug();
+        std::cout << "is none=" << key.is_none() << " ";
         if (key == keys.home) {
             std::cout << "COWWWWWW";
         }

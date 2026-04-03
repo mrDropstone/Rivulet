@@ -1,7 +1,7 @@
 #pragma once
 #include<iostream>
 
-
+namespace Rivulet {
 struct CursorStyle {
     bool visible : 1;
     bool blink : 1;
@@ -39,6 +39,6 @@ private:
 public:
     Cursor() : visible(1), blink(1), thin(1) {}
     template<typename DisplayTemplateArgument>
-    friend class RivuletCore;
+    friend class GridCore;
 };
-
+}

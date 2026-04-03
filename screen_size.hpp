@@ -3,6 +3,7 @@
 #include<termios.h>
 #include<unistd.h>
 
+namespace Rivulet {
 struct ScreenSize {
     unsigned int rows;
     unsigned int cols;
@@ -50,3 +51,4 @@ public:
     template<typename LineContainer>
     friend class Display;
 };
+}

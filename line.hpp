@@ -5,6 +5,7 @@
 #include <array>
 #include"utils.hpp"
 
+namespace Rivulet {
 class u8_char { // utf-8 character
 private:
     char _data;
@@ -244,5 +245,4 @@ public:
     template<typename LineContainer>
     friend class Display;
 };
-
-
+}

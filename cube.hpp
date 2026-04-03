@@ -1,7 +1,7 @@
 #pragma once
 #include"rivulet.hpp"
 #include<cmath>
-
+using namespace Rivulet;
 struct Actual {
     int x;
     int y;
@@ -77,7 +77,7 @@ struct Virtual {
 
 class Cube {
 private:
-    Rivulet zincul;
+    Grid zincul;
     int last_x = 50;
     int last_y = 50;
     std::vector<Virtual<double>> elements;

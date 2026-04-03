@@ -3,6 +3,8 @@
 #include"appearance.hpp"
 #include"screen_size.hpp"
 
+
+namespace Rivulet {
 template<typename LineContainer=Line<line<u32_char>>>
 class Display {
 private:
@@ -147,7 +149,7 @@ public:
         }
     }
     template<typename DisplayTemplateArgument>
-    friend class Rivulet;
+    friend class GridCore;
 };
 
-
+}

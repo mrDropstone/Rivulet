@@ -3,6 +3,7 @@
 #include<unistd.h>
 #include <vector>
 
+namespace Rivulet {
 class KeyDetection {
 private:
     std::vector<char> _key_data;
@@ -52,4 +53,4 @@ public:
         return Key(get_sequence());
     }
 };
-
+}

@@ -2,10 +2,9 @@
 #include<cstddef>
 #include<iostream>
 #include<vector>
-#include"utils.hpp"
 
 
-
+namespace Rivulet {
 class Key {
 private:
     std::vector<char> _data;
@@ -103,3 +102,4 @@ const struct {
 const struct {
     Key home{"\033\133\61\73\63\110"};
 } alt;
+}

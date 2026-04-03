@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <iostream>
 
+namespace Rivulet {
 struct Color {
     bool is_default_color = true;
     uint8_t red = 0;
@@ -87,5 +88,4 @@ void apply_appearance(Appearance& appearance) {
     handle_colors(applied_appearance.fg, appearance.fg, false);
     handle_colors(applied_appearance.bg, appearance.bg, true);
 }
-
-
+}
