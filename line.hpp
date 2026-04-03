@@ -71,7 +71,7 @@ public:
            return *this;
     }
     bool operator==(u32_char& other) {
-        return appearance == other.appearance && (int32_t)(_data[0]) == (int32_t)(other._data[0]); 
+        return appearance == other.appearance && _data == other._data;
     }
     bool operator!=(u32_char& other) {
         return !operator==(other);
@@ -209,28 +209,31 @@ public:
         int data_it = 0;
         int i = 1;
         int last_render_col = 1;
-        bool rendered = true;
+        bool rendered = false;
         while(i <= _actual_screen.size()) {
-            if(i >= cols || i == _data.size())
+            if(i >= cols || i > _data.size())
                 return;
             if(_data[data_it] != _actual_screen[data_it]) {
                 if(last_render_col != i) {
                     if(i - last_render_col > 8) {
-                        if(rendered) {
-                            std::cout << "\033[" << row << ";" << i - last_render_col << "H";
-                            rendered = false;
+                        if(!rendered) {
+                            std::cout << "\033[" << row << ";" << i - last_render_col + 1 << "H";
+                            rendered = true;
                         } else {
                             std::cout << "\033["<< i - last_render_col << "C";
                         }
                     } else {
-                        if(rendered) {
+                        if(!rendered) {
                             std::cout << "\033[" << row << ";" << last_render_col << "H";
-                            rendered = false;
+                            rendered = true;
                         } 
                         render_from(last_render_col, i);
                     }
                     data_it = i - 1;
                     last_render_col = i;
+                } else if (!rendered) {
+                    std::cout << "\033[" << row << ";" << last_render_col << "H";
+                    rendered = true;
                 }
                 _actual_screen[data_it] = _data._line_data[data_it];
                 _data[data_it].render();
