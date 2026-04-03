@@ -50,7 +50,6 @@ struct Appearance {
 };
 
 
-Appearance applied_appearance;
 
 
 inline bool handle_appearance(bool current, bool required, int enable_seq) {
@@ -74,7 +73,8 @@ inline void handle_colors(Color& current, Color required, bool is_background) {
     }
 }
 
-void apply_appearance(Appearance& appearance) {
+inline void apply_appearance(Appearance& appearance) {
+    static Appearance applied_appearance;
     if(applied_appearance != appearance) {
         if(handle_appearance(applied_appearance.style.dim, appearance.style.dim, 2))  { applied_appearance.style.dim = appearance.style.dim; if(!applied_appearance.style.dim) applied_appearance.style.bold = false;}
         if(handle_appearance(applied_appearance.style.bold, appearance.style.bold, 2))  { applied_appearance.style.bold = appearance.style.bold; if(!applied_appearance.style.bold) applied_appearance.style.dim = false;}

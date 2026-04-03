@@ -223,6 +223,10 @@ public:
                             std::cout << "\033["<< i - last_render_col << "C";
                         }
                     } else {
+                        if(rendered) {
+                            std::cout << "\033[" << row << ";" << i - last_render_col << "H";
+                            rendered = false;
+                        } 
                         render_from(last_render_col, i);
                     }
                     data_it = i - 1;

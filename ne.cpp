@@ -1,9 +1,10 @@
 #include<iostream>
 #include"rivulet.hpp"
 #include <unistd.h>
+using namespace Rivulet;
 
 int main() {
-    Rivulet rivulet;
+    Grid rivulet;
     for (int i = 0; i < 300; i++) {
         Key key = rivulet.key.get();
         key.debug();

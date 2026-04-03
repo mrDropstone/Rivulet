@@ -143,6 +143,7 @@ public:
         screen_empty = false;
     }
     void render() {
+        //std::cout << "\033[H";
         if(screen_empty) render_on_empty_screen();
         for(int i = 0; i < display.size(); i++) {
             display.at(i).render(size.current_ws.ws_col, i);
