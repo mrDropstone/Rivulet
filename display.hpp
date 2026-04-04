@@ -133,20 +133,15 @@ public:
     }
     void render_on_empty_screen() {
         size.update();
-        std::cout << "\r\n";
-        for(int i = 0; i < display.size(); i++) {
-            display.at(i).fill(size.current_ws.ws_col);
+        for (int i = 0; i < display.size(); i++)
             std::cout << "\r\n";
-            display.at(i).render(size.current_ws.ws_col, i);
-            continue;
-        }
         screen_empty = false;
+        render();
     }
     void render() {
-        //std::cout << "\033[H";
         if(screen_empty) render_on_empty_screen();
         for(int i = 0; i < display.size(); i++) {
-            display.at(i).render(size.current_ws.ws_col, i);
+            display.at(i).render(size.current_ws.ws_col, i + 1);
         }
     }
     template<typename DisplayTemplateArgument>
