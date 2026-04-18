@@ -148,6 +148,12 @@ public:
         _line_data.clear();
         fill(currentSize, value);
     }
+    void remove_elements(int amount) {
+        while (amount > 0) {
+            _line_data.pop_back();
+            amount--;
+        }
+    }
     template<typename LineDataContainer>
     friend class Line;
 };
@@ -190,8 +196,9 @@ public:
         _actual_screen.refill(' ');
         _is_modified = true;
     }
-
-
+    void reduce_actual_display_by(int amount) {
+        _actual_screen.remove_elements(amount);
+    }
     void render_from(unsigned int col, unsigned int target) {
         auto data_it = _data.begin();
         data_it += col - 1;

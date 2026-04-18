@@ -111,8 +111,8 @@ public:
         return depth_chars[l];
     }
     void update_screen() {
-        Centre_x = zincul.display.size.cols() / 2;
-        Centre_y = zincul.display.size.rows() / 2;
+        Centre_x = zincul.display.size.cols / 2;
+        Centre_y = zincul.display.size.rows / 2;
         zincul.display.clear();
         Actual man;
         char loh[2] = {0, 0};
@@ -132,11 +132,12 @@ public:
         if (pressed == keys.down_arrow) {update_screen();dx = dx - 5; if(dx < 0) dx = 360;zincul.render();}
         if (pressed == keys.right_arrow) {update_screen();dy = dy - 5; if(dy < 0) dy = 360;zincul.render();}
         if (pressed == keys.left_arrow) {update_screen(); dy = (dy + 5) % 360;zincul.render();}
+        if (pressed == 'h') {zincul.display.size.update(); update_screen();zincul.render();}
         if (pressed == keys.esc) return false;
         return true;
     }
     Cube() {
-        int size = zincul.display.size.cols() / 7;
+        int size = zincul.display.size.cols / 7;
         int begin = - size / 2;
         for(int i = 0; i < size; i++) {
             elements.emplace_back(i + begin, begin, begin);

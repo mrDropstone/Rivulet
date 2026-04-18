@@ -18,7 +18,7 @@ public:
         current_termios.c_iflag &= ~(IXON | ICRNL | BRKINT | INPCK | ISTRIP);
         current_termios.c_oflag &= ~(OPOST);
         current_termios.c_cflag |= (CS8);
-        current_termios.c_cc[VMIN] = 0;
+        current_termios.c_cc[VMIN] = 1;
         current_termios.c_cc[VTIME] = 0;
         if(tcsetattr(STDIN_FILENO, TCSAFLUSH, &current_termios) == -1) { std::cout << "Error loading configuration." << std::endl; std::exit(1); }
     }

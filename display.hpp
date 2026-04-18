@@ -2,6 +2,8 @@
 #include"line.hpp"
 #include"appearance.hpp"
 #include"screen_size.hpp"
+#include <algorithm>
+#include <iterator>
 
 
 namespace Rivulet {
@@ -10,14 +12,16 @@ class Display {
 private:
     bool screen_empty = true;
     bool is_cleared = false;
-    struct winsize old;
+    ScreenSize last_size;
 
 public:
     std::vector<LineContainer> display;
     Appearance appearance;
     unsigned int row = 0;
     unsigned int col = 0;
-    ScreenSizeGetter size;
+    ScreenSize size;
+    int renders_until_screen_size = 50;
+    int max_renders_until_screen_size = 50;
 
 private:
     void prevent_overflow(unsigned int _row) {
@@ -36,6 +40,8 @@ public:
     Display() {}
     void overwrite(char c) {
         prevent_overflow();
+        if (row >= display.size())
+            display.resize(row);
         display.at(row)._overwrite(c, col, appearance);
     }
     void clear() {
@@ -140,8 +146,15 @@ public:
     }
     void render() {
         if(screen_empty) render_on_empty_screen();
+        if (last_size != size) {
+            last_size = size;
+            for (auto& line_it : display) {
+                line_it.reduce_actual_display_by(line_it.len() - size.cols);
+            }
+        }
+        renders_until_screen_size--;
         for(int i = 0; i < display.size(); i++) {
-            display.at(i).render(size.current_ws.ws_col, i + 1);
+            display.at(i).render(size.cols, i + 1);
         }
     }
     template<typename DisplayTemplateArgument>
