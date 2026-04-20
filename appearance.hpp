@@ -42,7 +42,8 @@ struct Appearance {
     Color bg;
     Color fg;
     bool operator==(const Appearance& other) {
-        return *((int64_t*)&bg.is_default_color) == *((int64_t*)&other.bg.is_default_color) && style == other.style;
+        return bg == other.bg && fg == other.fg && style == other.style;
+        //return *((int64_t*)&bg.is_default_color) == *((int64_t*)&other.bg.is_default_color) && style == other.style;
     }
     bool operator!=(const Appearance& other) {
         return !operator==(other);
@@ -52,7 +53,7 @@ struct Appearance {
 
 
 
-inline bool handle_appearance(bool current, bool required, int enable_seq) {
+inline bool apply_style(bool current, bool required, int enable_seq) {
     if(current == required) return false;
     std::cout << "\033[";
     if(current) std::cout << 20 + enable_seq;
@@ -61,11 +62,11 @@ inline bool handle_appearance(bool current, bool required, int enable_seq) {
     return true;
 }
 
-inline void handle_colors(Color& current, Color required, bool is_background) {
+inline void apply_color(Color& current, Color required, bool is_background) {
     if(current != required) {
         current = required;
         if(current.is_default_color) {
-            std::cout << "\033[" << (3 + is_background) << "8;5;" << (int)current.red;
+            std::cout << "\033[" << is_background << "8;5;" << (int)current.red;
         } else {
             std::cout << "\033[" << (3 + is_background) << "8;2;" << (int)current.red << ';' << (int)current.green << ';' << (int)current.blue;
         }
@@ -73,19 +74,19 @@ inline void handle_colors(Color& current, Color required, bool is_background) {
     }
 }
 
-inline void apply_appearance(Appearance& appearance) {
+inline void apply_appearance(const Appearance& appearance) {
     static Appearance applied_appearance;
     if(applied_appearance != appearance) {
-        if(handle_appearance(applied_appearance.style.dim, appearance.style.dim, 2))  { applied_appearance.style.dim = appearance.style.dim; if(!applied_appearance.style.dim) applied_appearance.style.bold = false;}
-        if(handle_appearance(applied_appearance.style.bold, appearance.style.bold, 2))  { applied_appearance.style.bold = appearance.style.bold; if(!applied_appearance.style.bold) applied_appearance.style.dim = false;}
-        if(handle_appearance(applied_appearance.style.italic, appearance.style.italic, 3))   applied_appearance.style.italic = appearance.style.italic;
-        if(handle_appearance(applied_appearance.style.underline, appearance.style.underline, 4))   applied_appearance.style.underline = appearance.style.underline;
-        if(handle_appearance(applied_appearance.style.blink, appearance.style.blink, 5))   applied_appearance.style.blink = appearance.style.blink;
-        if(handle_appearance(applied_appearance.style.reverse, appearance.style.reverse, 7))   applied_appearance.style.reverse = appearance.style.reverse;
-        if(handle_appearance(applied_appearance.style.invisible, appearance.style.invisible, 8))   applied_appearance.style.invisible = appearance.style.invisible;
-        if(handle_appearance(applied_appearance.style.strike, appearance.style.strike, 9))   applied_appearance.style.strike = appearance.style.strike;
+        if(apply_style(applied_appearance.style.dim, appearance.style.dim, 2))  { applied_appearance.style.dim = appearance.style.dim; if(!applied_appearance.style.dim) applied_appearance.style.bold = false;}
+        if(apply_style(applied_appearance.style.bold, appearance.style.bold, 2))  { applied_appearance.style.bold = appearance.style.bold; if(!applied_appearance.style.bold) applied_appearance.style.dim = false;}
+        if(apply_style(applied_appearance.style.italic, appearance.style.italic, 3))   applied_appearance.style.italic = appearance.style.italic;
+        if(apply_style(applied_appearance.style.underline, appearance.style.underline, 4))   applied_appearance.style.underline = appearance.style.underline;
+        if(apply_style(applied_appearance.style.blink, appearance.style.blink, 5))   applied_appearance.style.blink = appearance.style.blink;
+        if(apply_style(applied_appearance.style.reverse, appearance.style.reverse, 7))   applied_appearance.style.reverse = appearance.style.reverse;
+        if(apply_style(applied_appearance.style.invisible, appearance.style.invisible, 8))   applied_appearance.style.invisible = appearance.style.invisible;
+        if(apply_style(applied_appearance.style.strike, appearance.style.strike, 9))   applied_appearance.style.strike = appearance.style.strike;
     }
-    handle_colors(applied_appearance.fg, appearance.fg, false);
-    handle_colors(applied_appearance.bg, appearance.bg, true);
+    apply_color(applied_appearance.fg, appearance.fg, false);
+    apply_color(applied_appearance.bg, appearance.bg, true);
 }
 }

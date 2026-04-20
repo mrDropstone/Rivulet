@@ -11,7 +11,7 @@ private:
     struct termios current_termios;
 public:
     TerminalConfiguration() {
-        std::cout << "\033[?1049h\x1b[?7l";
+        std::cout << "\033[?1049h"; //"\x1b[?7l";
         tcgetattr(STDIN_FILENO, &original_termios);
         current_termios = original_termios;
         current_termios.c_lflag &= ~(ECHO | ICANON | IEXTEN);

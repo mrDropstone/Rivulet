@@ -149,8 +149,10 @@ public:
         fill(currentSize, value);
     }
     void remove_elements(int amount) {
-        while (amount > 0) {
-            _line_data.pop_back();
+        if (_line_data.size() != 0)
+            return;
+        for (int i = _line_data.size(); i > 0 && amount > 0; i--) {
+            _line_data.at(i) = CharacterType();
             amount--;
         }
     }
@@ -171,9 +173,7 @@ public:
     void _overwrite(char c, unsigned int& col, Appearance& appearance) {
         std::string str;
         str = c;
-        _data.overwrite(str.c_str(), col, appearance);
-        _is_modified = true;
-        col++;
+        _overwrite(str.c_str(), col, appearance);
     }
     void _overwrite(const char* chars, unsigned int& col, Appearance& appearance) {
         col += _data.overwrite(chars, col, appearance);
@@ -184,20 +184,20 @@ public:
         return _data.len();
     }
     void clear() {
-        _data.refill_with(' ');
+        _data.refill_with(u32_char(' '));
         _is_modified = true;
     }
-    void fill(unsigned int amount) {
-        _data.fill(amount, ' ');
-        _actual_screen.fill(amount, ' ');
+    void clear_actual() {
+        _actual_screen.refill_with(' ');
         _is_modified = true;
     }
     void screen_cleared() {
-        _actual_screen.refill(' ');
+        _data.refill_with(u32_char(' '));
         _is_modified = true;
     }
     void reduce_actual_display_by(int amount) {
         _actual_screen.remove_elements(amount);
+        _is_modified = true;
     }
     void render_from(unsigned int col, unsigned int target) {
         auto data_it = _data.begin();
